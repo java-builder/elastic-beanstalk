@@ -27,4 +27,9 @@ public class ElasticBeanstalkController {
     public String version() {
         return "2.0.0";
     }
+
+    @GetMapping("/env")
+    public String env() {
+        return "dev";
+    }
 }
