@@ -22,4 +22,9 @@ public class ElasticBeanstalkController {
     public String defaultEndpoint() {
         return "Default endpoint";
     }
+
+    @GetMapping("/version")
+    public String version() {
+        return "1.0.0";
+    }
 }

@@ -1,0 +1,53 @@
+name: Deploy To ElasticBeanstalk
+run-name: ${{ github.actor }} is deploying
+on:
+  push:
+    branches:
+      - main
+
+env:
+  EB_ENV: ${{ github.ref_name == 'main' && 'cicd-eb-lab-prod' || 'cicd-eb-lab-dev' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Java version
+        run: java --version
+
+      - name: Build JAR
+        run: |
+          mvn package -DskipTests
+          cp target/*.jar app.jar
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ap-southeast-1
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v23
+        with:
+          aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ env.AWS_SESSION_TOKEN }}
+          region: ap-southeast-1
+          application_name: cicd-eb-lab
+          environment_name: ${{ env.EB_ENV }}
+          version_label: ${{ github.sha }}
+          deployment_package: app.jar
