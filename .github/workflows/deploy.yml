@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
 
 env:
   EB_ENV: ${{ github.ref_name == 'main' && 'cicd-eb-lab-prod' || 'cicd-eb-lab-dev' }}
