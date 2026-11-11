@@ -32,4 +32,9 @@ public class ElasticBeanstalkController {
     public String env() {
         return "prod";
     }
+
+    @GetMapping("/home")
+    public String home () {
+        return "Hello Elastic Beanstalk Production";
+    }
 }
