@@ -30,6 +30,6 @@ public class ElasticBeanstalkController {
 
     @GetMapping("/env")
     public String env() {
-        return "dev";
+        return "prod";
     }
 }
